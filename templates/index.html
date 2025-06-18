@@ -1,48 +1,75 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="utf-8">
-  <title>Clienti Lemne</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8" />
+    <title>Gestionare clienți - Lemne</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
-<div class="container">
-  <h1>Gestionare Clienți Lemne</h1>
+    <h1>Gestionare Clienți</h1>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="messages">
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
-  <form method="POST" action="/add">
-    <input type="text" name="nume" placeholder="Nume" required>
-    <input type="text" name="telefon" placeholder="Telefon" required>
-    <input type="text" name="localitate" placeholder="Localitate" required>
-    <input type="text" name="cnp" placeholder="CNP">
-    <input type="text" name="data_nasterii" placeholder="Data Nașterii (DD.MM.YYYY)">
-    <button type="submit">Adaugă Client</button>
-  </form>
+    <form action="{{ url_for('add_client') }}" method="post" class="form-add">
+        <h2>Adaugă Client</h2>
+        <label>Nume*:</label>
+        <input type="text" name="nume" required />
+        <label>Telefon*:</label>
+        <input type="text" name="telefon" required />
+        <label>Localitate*:</label>
+        <input type="text" name="localitate" required />
+        <label>CNP:</label>
+        <input type="text" name="cnp" />
+        <label>Data Nașterii (DD.MM.YYYY):</label>
+        <input type="text" name="data_nasterii" />
+        <label>Cantitate totală (tone):</label>
+        <input type="text" name="cantitate" value="0" />
+        <button type="submit">Adaugă Client</button>
+    </form>
 
-  <table>
-    <thead><tr><th>ID</th><th>Nume</th><th>Telefon</th><th>Localitate</th><th>CNP</th><th>Naștere</th><th>Tone</th></tr></thead>
-    <tbody>
-    {% for client in clienti %}
-      <tr>
-        <td>{{ client[0] }}</td>
-        <td>{{ client[1] }}</td>
-        <td>{{ client[2] }}</td>
-        <td>{{ client[3] }}</td>
-        <td>{{ client[4] or '-' }}</td>
-        <td>{{ client[5] or '-' }}</td>
-        <td>{{ client[6] }}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+    <h2>Lista Clienți</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th><th>Nume</th><th>Telefon</th><th>Localitate</th><th>CNP</th><th>Data Nașterii</th><th>Cantitate (tone)</th><th>Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in clienti %}
+            <tr>
+                <td>{{ c[0] }}</td>
+                <td>{{ c[1] }}</td>
+                <td>{{ c[2] }}</td>
+                <td>{{ c[3] }}</td>
+                <td>{{ c[4] if c[4] else '-' }}</td>
+                <td>{{ c[5] if c[5] else '-' }}</td>
+                <td>
+                    <form action="{{ url_for('update_cantitate', id=c[0]) }}" method="post" class="form-inline">
+                        <input type="text" name="cantitate_update" value="{{ c[6] }}" size="6" />
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('delete_client', id=c[0]) }}" method="post" onsubmit="return confirm('Ștergi clientul {{ c[1] }}?');">
+                        <button type="submit" class="delete-btn">Șterge</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form action="{{ url_for('verifica_nasteri') }}" method="get" style="margin-top:20px;">
+        <button type="submit">Verifică cine are ziua de naștere mâine</button>
+    </form>
+
 </body>
 </html>

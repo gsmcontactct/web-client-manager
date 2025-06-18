@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3, os
 from datetime import datetime, timedelta
@@ -25,10 +24,28 @@ def init_db():
         conn.commit()
         conn.close()
 
-@app.before_first_request
-def setup():
-    init_db()
-    verifica_zile_nastere()
+def verifica_zile_nastere():
+    maine = (datetime.now() + timedelta(days=1)).strftime("%d.%m")
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+    c.execute("SELECT nume, data_nasterii FROM clienti WHERE data_nasterii IS NOT NULL")
+    mesaje = []
+    for nume, data_nasterii in c.fetchall():
+        if data_nasterii:
+            try:
+                zi_luna = datetime.strptime(data_nasterii, "%d.%m.%Y").strftime("%d.%m")
+                if zi_luna == maine:
+                    mesaje.append(f"Mâine este ziua lui {nume} – {data_nasterii}")
+            except ValueError:
+                continue
+    conn.close()
+    if mesaje:
+        for mesaj in mesaje:
+            flash(mesaj, "alarm")
+
+# Apelăm inițializarea DB și verificarea zilelor de naștere *înainte* să pornească serverul
+init_db()
+verifica_zile_nastere()
 
 @app.route('/', methods=['GET'])
 def index():
@@ -63,25 +80,6 @@ def add_client():
     conn.close()
     flash("Client adăugat cu succes", "success")
     return redirect(url_for('index'))
-
-def verifica_zile_nastere():
-    maine = (datetime.now() + timedelta(days=1)).strftime("%d.%m")
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
-    c.execute("SELECT nume, data_nasterii FROM clienti WHERE data_nasterii IS NOT NULL")
-    mesaje = []
-    for nume, data_nasterii in c.fetchall():
-        if data_nasterii:
-            try:
-                zi_luna = datetime.strptime(data_nasterii, "%d.%m.%Y").strftime("%d.%m")
-                if zi_luna == maine:
-                    mesaje.append(f"Mâine este ziua lui {nume} – {data_nasterii}")
-            except ValueError:
-                continue
-    conn.close()
-    if mesaje:
-        for mesaj in mesaje:
-            flash(mesaj, "alarm")
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>Gestionare Clienți</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Lista Clienți</h1>
+    <form method="POST" action="/add" class="form">
+      <input type="text" name="nume" placeholder="Nume" required>
+      <input type="text" name="telefon" placeholder="Telefon" required>
+      <input type="text" name="localitate" placeholder="Localitate" required>
+      <input type="text" name="cnp" placeholder="CNP">
+      <input type="text" name="data_nasterii" placeholder="Data Nașterii (DD.MM.YYYY)">
+      <button type="submit">Adaugă Client</button>
+    </form>
+    <ul>
+      {% for client in clienti %}
+        <li>{{ client[1] }} | {{ client[2] }} | {{ client[3] }} | CNP: {{ client[4] or '-' }} | Data: {{ client[5] or '-' }} | {{ client[6] or 0 }} tone - <a href="/delete/{{ client[0] }}">Șterge</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>

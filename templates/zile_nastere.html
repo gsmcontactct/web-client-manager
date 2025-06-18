@@ -1,0 +1,20 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Zile de Naștere Mâine</title>
+</head>
+<body>
+    <h1>Clienți cu ziua de naștere mâine</h1>
+    {% if clienti %}
+        <ul>
+        {% for client in clienti %}
+            <li>{{ client[1] }} - {{ client[5] }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Niciun client nu are ziua mâine.</p>
+    {% endif %}
+    <a href="/">Înapoi</a>
+</body>
+</html>

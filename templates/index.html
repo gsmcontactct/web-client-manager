@@ -1,26 +1,48 @@
+
 <!doctype html>
 <html lang="ro">
 <head>
   <meta charset="utf-8">
-  <title>Gestionare Clienți</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <title>Clienti Lemne</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="container">
-    <h1>Lista Clienți</h1>
-    <form method="POST" action="/add" class="form">
-      <input type="text" name="nume" placeholder="Nume" required>
-      <input type="text" name="telefon" placeholder="Telefon" required>
-      <input type="text" name="localitate" placeholder="Localitate" required>
-      <input type="text" name="cnp" placeholder="CNP">
-      <input type="text" name="data_nasterii" placeholder="Data Nașterii (DD.MM.YYYY)">
-      <button type="submit">Adaugă Client</button>
-    </form>
-    <ul>
-      {% for client in clienti %}
-        <li>{{ client[1] }} | {{ client[2] }} | {{ client[3] }} | CNP: {{ client[4] or '-' }} | Data: {{ client[5] or '-' }} | {{ client[6] or 0 }} tone - <a href="/delete/{{ client[0] }}">Șterge</a></li>
+<div class="container">
+  <h1>Gestionare Clienți Lemne</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
       {% endfor %}
-    </ul>
-  </div>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="/add">
+    <input type="text" name="nume" placeholder="Nume" required>
+    <input type="text" name="telefon" placeholder="Telefon" required>
+    <input type="text" name="localitate" placeholder="Localitate" required>
+    <input type="text" name="cnp" placeholder="CNP">
+    <input type="text" name="data_nasterii" placeholder="Data Nașterii (DD.MM.YYYY)">
+    <button type="submit">Adaugă Client</button>
+  </form>
+
+  <table>
+    <thead><tr><th>ID</th><th>Nume</th><th>Telefon</th><th>Localitate</th><th>CNP</th><th>Naștere</th><th>Tone</th></tr></thead>
+    <tbody>
+    {% for client in clienti %}
+      <tr>
+        <td>{{ client[0] }}</td>
+        <td>{{ client[1] }}</td>
+        <td>{{ client[2] }}</td>
+        <td>{{ client[3] }}</td>
+        <td>{{ client[4] or '-' }}</td>
+        <td>{{ client[5] or '-' }}</td>
+        <td>{{ client[6] }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 </body>
 </html>
